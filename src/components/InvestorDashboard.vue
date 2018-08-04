@@ -10,7 +10,7 @@
               <div class="card-body">
                   <div class="project-info">
                     <h5 class="card-title">{{ project.title }}</h5>
-                    <p class="card-text">by {{ project.creator }}</p>
+                    <p class="card-text">by {{ project.creator.name }}</p>
                   </div>
 
                   <div class="separator">
@@ -49,15 +49,20 @@ export default {
     // }
   },
   mounted () {
-    axios
-      .get(BACKEND_URL + 'investedProjects')
+    if (!JSON.parse(localStorage.getItem('projects'))) {
+      axios
+      .get(BACKEND_URL + 'projects')
       .then(res => {
         var projects = res.data.projects
+        localStorage.setItem('projects', JSON.stringify(projects))
         for (var i = 0; i < projects.length; i++) {
           this.projects.push(projects[i])
           this.projectsMap[String(projects[i].projectId)] = projects[i]
         }
       })
+    } else {
+      this.projects = JSON.parse(localStorage.getItem('projects'))
+    }
   }
 }
 </script>

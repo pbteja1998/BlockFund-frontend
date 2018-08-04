@@ -4,13 +4,18 @@
     <h3>Explore <b style="color: #009E74;">{{ projects.length }} projects</b></h3>
   </div>
   <div class="row">
+    <div class="col-md-3 pointer mb-5" @click="$router.push('/project/0')">
+          <div class="card">
+              <img class="card-img-top" src="https://upload.wikimedia.org/wikipedia/commons/9/9e/Plus_symbol.svg" alt="Card image cap">
+          </div>
+    </div>
     <div class="col-md-3 pointer mb-5" :key="project.projectId" v-for="project in projects" @click="$router.push('/project/' + project.projectId)">
           <div class="card">
               <img class="card-img-top" :src="project.imgSrc" alt="Card image cap">
               <div class="card-body">
                   <div class="project-info">
                     <h5 class="card-title">{{ project.title }}</h5>
-                    <p class="card-text">by {{ project.creator }}</p>
+                    <p class="card-text">by {{ project.creator.name }}</p>
                   </div>
 
                   <div class="separator">
@@ -49,15 +54,20 @@ export default {
     // }
   },
   mounted () {
-    axios
-      .get(BACKEND_URL + 'createdProjects')
+    if (!JSON.parse(localStorage.getItem('projects'))) {
+      axios
+      .get(BACKEND_URL + 'projects')
       .then(res => {
         var projects = res.data.projects
+        localStorage.setItem('projects', JSON.stringify(projects))
         for (var i = 0; i < projects.length; i++) {
           this.projects.push(projects[i])
           this.projectsMap[String(projects[i].projectId)] = projects[i]
         }
       })
+    } else {
+      this.projects = JSON.parse(localStorage.getItem('projects'))
+    }
   }
 }
 </script>

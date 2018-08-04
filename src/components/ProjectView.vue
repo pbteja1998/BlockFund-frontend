@@ -10,16 +10,18 @@
           <button class="mt-2 btn btn-sm btn-secondary">Follow Creator</button> -->
         </div>
         <div>
+          <button class="btn btn-success pull-right" @click="saveChanges()">Save this Project</button>
           <h2 v-if="!projectEdit.title" @click="projectEdit.title=!projectEdit.title">{{ project.title }}</h2>
-          <input type="text" v-model="project.title" v-else @keyup.enter="projectEdit.title=!projectEdit.title">
+          <input type="text" placeholder="Your Title goes here" v-model="project.title" v-else @keyup.enter="projectEdit.title=!projectEdit.title">
           <p style="font-size: 1.2rem; color: #656969;" v-if="!projectEdit.description" @click="projectEdit.description=!projectEdit.description">{{ project.description }}</p>
-          <textarea rows="3" v-model="project.description" v-else @keyup.enter="projectEdit.description=!projectEdit.description"></textarea>
+          <textarea rows="3" v-model="project.description" v-else @keyup.enter="projectEdit.description=!projectEdit.description"></textarea>          
         </div>
       </div>
       <div class="project-info mt-5">
         <div class="row">
           <div class="col-md-8 p-2">
-            <img :src="project.imgSrc" alt="" style="width: 100%;">
+            <img :src="project.imgSrc" alt="" style="width: 100%;" v-if="!projectEdit.imgSrc" @click="projectEdit.imgSrc=!projectEdit.imgSrc">
+            <input placeholder="http://www.example.com" type="url" v-else @keyup.enter="projectEdit.imgSrc=!projectEdit.imgSrc" v-model="project.imgSrc">
           </div>
           <div class="col-md-4 p-2">
             <div class="mb-3" style="width: 100%; background-color: #037362;height: 0.3rem;"></div>
@@ -36,6 +38,7 @@
               <span style="color: #656969;">days to go</span>
             </div>
             <button class="btn btn-success btn-block" data-toggle="modal" data-target="#paymentPopup">Back this project</button>
+            <button class="btn btn-success btn-block" data-toggle="modal" data-target="#proposalCreateModal">Create Proposal</button>
           </div>
         </div>
       </div>
@@ -111,6 +114,47 @@
         </div>
       </div>
     </div>
+    <div id="proposalCreateModal" class="modal" tabindex="-1" role="dialog">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Proposal Creation</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="form-group">
+              <label>Title</label>
+              <input type="text" class="form-control">
+            </div>
+            <div class="form-group">
+              <label>Description</label>
+              <input type="text" class="form-control">
+            </div>
+            <div class="form-group">
+              <label>Amount</label>
+              <input type="number" class="form-control">
+            </div>
+            <div class="form-group">
+              <label>Proposal Type</label>
+              <select class="form-control">
+                <option selected disabled>Select Proposal Type</option>
+                <option value="1">Inital Creation</option>
+                <option value="2">Raise Higher</option>
+                <option value="3">Raise Lower</option>
+                <option value="4">Redeem Amount</option>
+                <option value="5">Freeze Funding</option>
+              </select>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary">Save changes</button>
+          </div>
+        </div>
+      </div>
+    </div>
 </div>
 </template>
 
@@ -121,19 +165,60 @@ export default {
   name: 'ProjectView',
   data () {
     return {
-      project: {},
+      project: {
+        amountRaised: 0,
+        amountToRaise: 0,
+        creator: {
+          imgSrc: 'https://www.w3schools.com/howto/img_avatar.png',
+          name: 'YourName',
+          totalProjects: 0
+        },
+        description: 'Description Goes Here',
+        projectId: null,
+        imgSrc: 'https://image.ibb.co/gbiAow/project.jpg',
+        noOfInvestors: 0,
+        proposals: [],
+        timeRemaining: 0,
+        title: 'Your title goes here'
+      },
       projectEdit: {
         title: false,
-        description: false
+        description: false,
+        imgSrc: false
       }
     }
   },
   mounted () {
-    axios
+    if (this.$route.params.id && this.$route.params.id > 0) {
+      axios
       .get(BACKEND_URL + 'investor/' + this.$route.params.id)
       .then(res => {
+        console.log(res.data.project)
         this.project = res.data.project
       })
+    }
+  },
+  methods: {
+    saveChanges: function () {
+      var projects = JSON.parse(localStorage.getItem('projects'))
+      if (this.project.projectId === null) {
+        this.project.projectId = projects.length + 1
+        projects.push(this.project)
+        localStorage.setItem('projects', JSON.stringify(projects))
+      } else {
+        console.log("here")
+        var newProjects = []
+        for (var i = 0; i < projects.length; i++) {
+          if (projects[i].projectId === this.project.projectId) {
+            newProjects.push(this.project)
+          } else {
+            newProjects.push(projects[i])
+          }
+        }
+        localStorage.setItem('projects', JSON.stringify(newProjects))
+      }
+      this.$router.push('/creator-dashboard')
+    }
   }
 }
 </script>
@@ -157,5 +242,11 @@ export default {
   a[aria-selected="false"] {
     color: #2e2828 !important;
   }
+  input, textarea {
+    width: 60%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    box-sizing: border-box;
+}
 
 </style>
