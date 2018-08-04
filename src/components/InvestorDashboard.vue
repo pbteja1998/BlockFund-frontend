@@ -4,7 +4,7 @@
     <h3>Explore <b style="color: #009E74;">{{ projects.length }} projects</b></h3>
   </div>
   <div class="row">
-    <div class="col-md-4 pointer mb-5" :key="project.id" v-for="project in projects" @click="$router.push('/project/' + project.id)">
+    <div class="col-md-3 pointer mb-5" :key="project.id" v-for="project in projects" @click="$router.push('/project/' + project.id)">
           <div class="card">
               <img class="card-img-top" :src="project.imgSrc" alt="Card image cap">
               <div class="card-body">

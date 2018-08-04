@@ -8,8 +8,10 @@
             <button class="mt-2 btn btn-sm btn-secondary">Follow Creator</button>
           </div>
           <div>
-            <h2>{{ project.title }}</h2>
-            <p style="font-size: 1.2rem; color: #656969;">{{ project.description }}</p>
+            <h2 v-if="!projectEdit.title" @click="projectEdit.title=!projectEdit.title">{{ project.title }}</h2>
+            <input type="text" v-model="project.title" v-else @keyup.enter="projectEdit.title=!projectEdit.title">
+            <p style="font-size: 1.2rem; color: #656969;" v-if="!projectEdit.description" @click="projectEdit.description=!projectEdit.description">{{ project.description }}</p>
+            <textarea cols="140" rows="3" v-model="project.description" v-else @keyup.enter="projectEdit.description=!projectEdit.description"></textarea>
           </div>
         </div>
         <div class="project-info mt-5">
@@ -156,6 +158,10 @@ export default {
           backers: 900,
           imgSrc: 'https://ksr-ugc.imgix.net/assets/021/482/324/2890cbcf232ab30df4dade96b48c9cf4_original.png?crop=faces&w=560&h=315&fit=crop&v=1533159189&auto=format&q=92&s=b733245e01568489d367dab023c6cbda'
         }
+      },
+      projectEdit: {
+        title: false,
+        description: false
       }
     }
   },

@@ -19,6 +19,11 @@
           <a class="nav-link" href="#">Creator Dashboard<span class="sr-only"></span></a>
         </router-link>
       </li>
+      <li class="nav-item">
+        <router-link to="/dashboard" class="nav-link">
+          <a class="nav-link" href="#">Dashboard<span class="sr-only"></span></a>
+        </router-link>
+      </li>
     </ul>
     <ul class="navbar-nav">
       <li class="nav-item dropdown">

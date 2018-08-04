@@ -32,7 +32,7 @@
 
 <script>
 export default {
-  name: 'CreatorDashboard',
+  name: 'Home',
   data: function () {
     return {
       projectsMap: {
